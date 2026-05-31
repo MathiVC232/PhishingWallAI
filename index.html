@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhishingWall AI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #020617, #0f172a, #111827);
+      color: white;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    h1 {
+      color: #38bdf8;
+      font-size: 42px;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #cbd5e1;
+      margin-bottom: 25px;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .metric, .card {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid #334155;
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .metric h3 {
+      color: #94a3b8;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .metric p {
+      font-size: 30px;
+      margin: 10px 0 0;
+      font-weight: bold;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .tabs button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 12px;
+      background: #1e293b;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .tabs button.active {
+      background: #38bdf8;
+      color: #020617;
+    }
+
+    textarea, input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      background: #020617;
+      color: white;
+      margin-bottom: 15px;
+    }
+
+    textarea {
+      height: 140px;
+      resize: none;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: #38bdf8;
+      color: #020617;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 18px;
+      background: #020617;
+      border: 1px solid #334155;
+      white-space: pre-line;
+    }
+
+    .safe {
+      border-color: #22c55e;
+      color: #22c55e;
+    }
+
+    .warning {
+      border-color: #facc15;
+      color: #facc15;
+    }
+
+    .danger {
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+
+    .progress {
+      background: #334155;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 15px 0;
+      height: 18px;
+    }
+
+    .progress div {
+      height: 100%;
+      background: #38bdf8;
+      width: 0%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    th, td {
+      border-bottom: 1px solid #334155;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      color: #38bdf8;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .footer {
+      margin-top: 30px;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    @media (max-width: 800px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🛡️ PhishingWall AI</h1>
+    <p class="subtitle">Protección inteligente contra phishing, SMS fraudulentos y clones financieros</p>
+
+    <div class="dashboard">
+      <div class="metric">
+        <h3>Análisis realizados</h3>
+        <p id="totalAnalisis">0</p>
+      </div>
+      <div class="metric">
+        <h3>Amenazas detectadas</h3>
+        <p id="totalAmenazas">0</p>
+      </div>
+      <div class="metric">
+        <h3>Sospechosos</h3>
+        <p id="totalSospechosos">0</p>
+      </div>
+      <div class="metric">
+        <h3>Seguros</h3>
+        <p id="totalSeguros">0</p>
+      </div>
+    </div>
+
+    <div class="card">
+      🟢 Protección en tiempo real simulada activa
+    </div>
+
+    <br>
+
+    <div class="tabs">
+      <button class="active" onclick="mostrarTab('url', this)">🔗 Analizador URL</button>
+      <button onclick="mostrarTab('sms', this)">📩 Analizador SMS</button>
+      <button onclick="mostrarTab('dashboard', this)">📊 Dashboard</button>
+      <button onclick="mostrarTab('empresa', this)">🏦 Modo empresarial</button>
+    </div>
+
+    <div id="url" class="tab">
+      <div class="card">
+        <h2>🔗 Analizador de enlaces</h2>
+        <input id="urlInput" placeholder="Ejemplo: http://pichincha-verificar-bono.xyz/login">
+        <button class="btn" onclick="analizarURL()">🚨 Analizar enlace</button>
+        <div id="resultadoURL"></div>
+      </div>
+    </div>
+
+    <div id="sms" class="tab hidden">
+      <div class="card">
+        <h2>📩 PhishingWall SMS Shield</h2>
+        <textarea id="smsInput" placeholder="Ejemplo: Banco Pichincha informa que su cuenta fue bloqueada. Verifique aquí: http://pichincha-bono-seguridad.xyz/login"></textarea>
+        <button class="btn" onclick="analizarSMS()">📲 Analizar SMS</button>
+        <div id="resultadoSMS"></div>
+      </div>
+    </div>
+
+    <div id="dashboard" class="tab hidden">
+      <div class="card">
+        <h2>📊 Historial de análisis</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Tipo</th>
+              <th>Entidad</th>
+              <th>Dominio</th>
+              <th>Riesgo</th>
+              <th>Estado</th>
+              <th>Reputación</th>
+            </tr>
+          </thead>
+          <tbody id="tablaHistorial"></tbody>
+        </table>
+      </div>
+
+      <br>
+
+      <div class="card">
+        <h2>🚨 Amenazas recientes detectadas</h2>
+        <p>paypal-verificacion.xyz</p>
+        <p>chase-security-login.top</p>
+        <p>pichincha-bono.site</p>
+        <p>bbva-premio.click</p>
+        <p>bancoguayaquil-validacion.info</p>
+      </div>
+    </div>
+
+    <div id="empresa" class="tab hidden">
+      <div class="card">
+        <h2>🏦 PhishingWall Enterprise</h2>
+        <p>
+          PhishingWall puede convertirse en una plataforma empresarial para bancos,
+          cooperativas, fintechs y universidades.
+        </p>
+        <p>Funciones empresariales:</p>
+        <ul>
+          <li>Monitoreo de dominios falsos.</li>
+          <li>Alertas preventivas.</li>
+          <li>Reportes de amenazas.</li>
+          <li>Protección SMS.</li>
+          <li>API de reputación de enlaces.</li>
+          <li>Dashboard de ciberseguridad financiera.</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="footer">PhishingWall AI © 2026 — Cybersecurity Intelligence Platform</p>
+  </div>
+
+  <script>
+    const bancosOficiales = {
+      "Banco Pichincha": ["pichincha.com"],
+      "Banco Guayaquil": ["bancoguayaquil.com"],
+      "Produbanco": ["produbanco.com"],
+      "Banco del Pacífico": ["bancodelpacifico.com"],
+      "PayPal": ["paypal.com"],
+      "Chase Bank": ["chase.com"],
+      "Bank of America": ["bankofamerica.com"],
+      "BBVA": ["bbva.com"],
+      "Santander": ["santander.com"],
+      "HSBC": ["hsbc.com"]
+    };
+
+    const palabrasSospechosas = [
+      "verificar", "verifique", "bloqueo", "bloqueada", "premio", "bono",
+      "actualizar", "seguridad", "login", "cuenta", "clave", "validar",
+      "urgente", "regalo", "confirmar", "acceso", "suspendida", "reactivar"
+    ];
+
+    const dominiosRaros = [".xyz", ".top", ".click", ".info", ".site", ".online", ".shop", ".live"];
+
+    let historial = [];
+
+    function mostrarTab(id, boton) {
+      document.querySelectorAll(".tab").forEach(tab => tab.classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+
+      document.querySelectorAll(".tabs button").forEach(btn => btn.classList.remove("active"));
+      boton.classList.add("active");
+    }
+
+    function obtenerDominio(url) {
+      try {
+        return new URL(url).hostname.replace("www.", "");
+      } catch {
+        return "No válido";
+      }
+    }
+
+    function similitud(a, b) {
+      let matches = 0;
+      let min = Math.min(a.length, b.length);
+
+      for (let i = 0; i < min; i++) {
+        if (a[i] === b[i]) matches++;
+      }
+
+      return Math.round((matches / Math.max(a.length, b.length)) * 100);
+    }
+
+    function reputacionDominio(riesgo) {
+      if (riesgo <= 30) return "🟢 Verificada";
+      if (riesgo <= 60) return "🟡 Dudosa";
+      return "🔴 Mala";
+    }
+
+    function obtenerEstado(riesgo) {
+      if (riesgo <= 30) return ["✅ Seguro", "El contenido parece confiable."];
+      if (riesgo <= 60) return ["⚠️ Sospechoso", "Revisa cuidadosamente antes de ingresar información personal."];
+      return ["🚨 Alto riesgo", "No abras el enlace ni ingreses datos bancarios."];
+    }
+
+    function analizarLogicaURL(url) {
+      let riesgo = 0;
+      let razones = [];
+      let entidad = "No detectada";
+      let tipo = "Análisis general";
+      let similitudMax = 0;
+
+      let urlLower = url.toLowerCase();
+      let dominio = obtenerDominio(url);
+
+      if (dominio === "No válido") {
+        riesgo += 30;
+        razones.push("La URL no tiene un dominio válido.");
+      }
+
+      if (!urlLower.startsWith("https://")) {
+        riesgo += 20;
+        razones.push("El enlace no usa HTTPS seguro.");
+      }
+
+      palabrasSospechosas.forEach(palabra => {
+        if (urlLower.includes(palabra)) {
+          riesgo += 10;
+          razones.push(`Contiene palabra sospechosa: '${palabra}'.`);
+        }
+      });
+
+      dominiosRaros.forEach(raro => {
+        if (dominio.includes(raro)) {
+          riesgo += 20;
+          razones.push(`Usa un dominio poco confiable: '${raro}'.`);
+        }
+      });
+
+      for (let banco in bancosOficiales) {
+        let nombreSimple = banco.toLowerCase()
+          .replace("banco", "")
+          .replace("bank", "")
+          .replaceAll(" ", "");
+
+        let urlSimple = urlLower
+          .replaceAll("-", "")
+          .replaceAll("_", "")
+          .replaceAll(".", "");
+
+        for (let oficial of bancosOficiales[banco]) {
+          let sim = similitud(dominio, oficial);
+          if (sim > similitudMax) similitudMax = sim;
+
+          if (dominio.includes(oficial)) {
+            entidad = banco;
+            tipo = "Sitio oficial identificado";
+            riesgo = Math.max(riesgo - 20, 0);
+            razones.push(`Dominio oficial detectado para ${banco}.`);
+            return { riesgo, razones, entidad, dominio, tipo, similitudMax };
+          }
+        }
+
+        if (urlSimple.includes(nombreSimple)) {
+          entidad = banco;
+          tipo = "Posible clon financiero";
+          riesgo += 35;
+          razones.push(`El enlace intenta usar el nombre de ${banco} sin ser dominio oficial.`);
+        }
+      }
+
+      if (url.length > 75) {
+        riesgo += 10;
+        razones.push("La URL es demasiado larga.");
+      }
+
+      if (dominio.includes("-")) {
+        riesgo += 10;
+        razones.push("El dominio contiene guiones, común en sitios falsos.");
+      }
+
+      riesgo = Math.min(riesgo, 100);
+
+      return { riesgo, razones, entidad, dominio, tipo, similitudMax };
+    }
+
+    function extraerLinks(texto) {
+      return texto.match(/https?:\/\/[^\s]+/g) || [];
+    }
+
+    function analizarLogicaSMS(texto) {
+      let links = extraerLinks(texto);
+      let riesgoTotal = 0;
+      let razonesTotal = [];
+      let entidad = "No detectada";
+      let dominio = "No detectado";
+      let tipo = "SMS sospechoso";
+      let urlDetectada = "Sin enlace";
+      let similitudMax = 0;
+
+      let textoLower = texto.toLowerCase();
+
+      palabrasSospechosas.forEach(palabra => {
+        if (textoLower.includes(palabra)) {
+          riesgoTotal += 8;
+          razonesTotal.push(`El SMS contiene palabra sospechosa: '${palabra}'.`);
+        }
+      });
+
+      if (links.length === 0) {
+        riesgoTotal += 10;
+        razonesTotal.push("El SMS no contiene enlace, pero utiliza lenguaje que puede ser engañoso.");
+      } else {
+        urlDetectada = links[0];
+        let analisis = analizarLogicaURL(urlDetectada);
+
+        riesgoTotal += analisis.riesgo;
+        razonesTotal = razonesTotal.concat(analisis.razones);
+        entidad = analisis.entidad;
+        dominio = analisis.dominio;
+        similitudMax = analisis.similitudMax;
+
+        if (analisis.riesgo > 60) {
+          tipo = "Posible clon financiero enviado por SMS";
+        } else {
+          tipo = "SMS con enlace analizado";
+        }
+      }
+
+      riesgoTotal = Math.min(riesgoTotal, 100);
+
+      return { riesgo: riesgoTotal, razones: razonesTotal, entidad, dominio, tipo, urlDetectada, links, similitudMax };
+    }
+
+    function mostrarResultado(contenedor, tipoAnalisis, contenido, url, analisis) {
+      let [estado, mensaje] = obtenerEstado(analisis.riesgo);
+      let trustScore = 100 - analisis.riesgo;
+      let reputacion = reputacionDominio(analisis.riesgo);
+
+      let clase = "safe";
+      if (analisis.riesgo > 60) clase = "danger";
+      else if (analisis.riesgo > 30) clase = "warning";
+
+      contenedor.innerHTML = `
+        <div class="result ${clase}">
+          <h2>${estado} — Riesgo: ${analisis.riesgo}/100</h2>
+
+          <div class="progress">
+            <div style="width:${trustScore}%"></div>
+          </div>
+
+          <strong>Trust Score:</strong> ${trustScore}/100
+          <br><strong>Entidad detectada:</strong> ${analisis.entidad}
+          <br><strong>Dominio analizado:</strong> ${analisis.dominio}
+          <br><strong>Tipo de amenaza:</strong> ${analisis.tipo}
+          <br><strong>Reputación:</strong> ${reputacion}
+          <br><strong>Similitud bancaria:</strong> ${analisis.similitudMax}%
+
+          <h3>📌 Razones detectadas:</h3>
+          ${analisis.razones.map(r => "• " + r).join("<br>")}
+
+          <h3>💡 Recomendación:</h3>
+          ${mensaje}
+        </div>
+      `;
+
+      historial.push({
+        fecha: new Date().toLocaleString(),
+        tipo: tipoAnalisis,
+        contenido: contenido,
+        url: url,
+        dominio: analisis.dominio,
+        entidad: analisis.entidad,
+        riesgo: analisis.riesgo,
+        estado: estado,
+        reputacion: reputacion
+      });
+
+      actualizarDashboard();
+    }
+
+    function analizarURL() {
+      let url = document.getElementById("urlInput").value.trim();
+      let contenedor = document.getElementById("resultadoURL");
+
+      if (url === "") {
+        contenedor.innerHTML = `<div class="result warning">Ingresa primero un enlace.</div>`;
+        return;
+      }
+
+      let analisis = analizarLogicaURL(url);
+      mostrarResultado(contenedor, "URL", url, url, analisis);
+    }
+
+    function analizarSMS() {
+      let sms = document.getElementById("smsInput").value.trim();
+      let contenedor = document.getElementById("resultadoSMS");
+
+      if (sms === "") {
+        contenedor.innerHTML = `<div class="result warning">Ingresa primero un SMS.</div>`;
+        return;
+      }
+
+      let analisis = analizarLogicaSMS(sms);
+      mostrarResultado(contenedor, "SMS", sms, analisis.urlDetectada, analisis);
+    }
+
+    function actualizarDashboard() {
+      let total = historial.length;
+      let amenazas = historial.filter(x => x.riesgo > 60).length;
+      let sospechosos = historial.filter(x => x.riesgo > 30 && x.riesgo <= 60).length;
+      let seguros = historial.filter(x => x.riesgo <= 30).length;
+
+      document.getElementById("totalAnalisis").innerText = total;
+      document.getElementById("totalAmenazas").innerText = amenazas;
+      document.getElementById("totalSospechosos").innerText = sospechosos;
+      document.getElementById("totalSeguros").innerText = seguros;
+
+      let tabla = document.getElementById("tablaHistorial");
+      tabla.innerHTML = "";
+
+      historial.forEach(item => {
+        tabla.innerHTML += `
+          <tr>
+            <td>${item.fecha}</td>
+            <td>${item.tipo}</td>
+            <td>${item.entidad}</td>
+            <td>${item.dominio}</td>
+            <td>${item.riesgo}/100</td>
+            <td>${item.estado}</td>
+            <td>${item.reputacion}</td>
+          </tr>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>
